@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fry Oil Labour Cost Calculator - Save Fry-Oil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .helper-text {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(107, 114, 128, 0.4);
+        }
+
+        .results-dashboard {
+            background: #f9fafb;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .results-section {
+            margin-bottom: 30px;
+        }
+
+        .results-section h2 {
+            color: #1e3a8a;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+
+        .cost-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .cost-value {
+            font-weight: 700;
+            color: #1e3a8a;
+            font-size: 1.1em;
+        }
+
+        .total-highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .total-highlight .cost-item {
+            border: none;
+        }
+
+        .total-highlight .cost-value {
+            font-size: 1.5em;
+            color: #1e40af;
+        }
+
+        .savings-highlight {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .savings-highlight .cost-value {
+            color: #065f46;
+            font-size: 1.5em;
+        }
+
+        .qualification-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #f59e0b;
+        }
+
+        .qualification-box.qualified {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left-color: #10b981;
+        }
+
+        .qualification-box h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .qualification-box.qualified h3 {
+            color: #065f46;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 15px;
+            background: #f59e0b;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .qualification-box.qualified .cta-button {
+            background: #10b981;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table th {
+            background: #1e3a8a;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .metric-card h4 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .metric-subtitle {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            margin: 30px 0 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6 0%, #1e3a8a 100%);
+            height: 100%;
+            transition: width 0.5s;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            flex: 1;
+            min-width: 200px;
+            background: #10b981;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+            }
+
+            .download-btn {
+                min-width: 100%;
+            }
+        }
+
+        .expandable-section {
+            margin: 20px 0;
+        }
+
+        .expandable-header {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .expandable-header:hover {
+            background: #e5e7eb;
+        }
+
+        .expandable-header h3 {
+            color: #1e3a8a;
+            margin: 0;
+        }
+
+        .expand-icon {
+            font-size: 1.5em;
+            color: #3b82f6;
+            transition: transform 0.3s;
+        }
+
+        .expandable-header.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding: 0 15px;
+        }
+
+        .expandable-content.expanded {
+            max-height: 2000px;
+            padding: 15px;
+            transition: max-height 0.5s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏱️ Fry Oil Labour Cost Calculator</h1>
+            <p>Discover the true labour costs of your oil change routine</p>
+        </div>
+
+        <div class="content">
+            <!-- Page 1: Introduction -->
+            <div class="page active" id="page1">
+                <h2 style="color: #1e3a8a; margin-bottom: 20px;">Welcome to the Labour Cost Calculator</h2>
+                <p style="line-height: 1.8; color: #374151; margin-bottom: 20px;">
+                    Most operations managers estimate oil changes take "15-20 minutes." The reality? When you include cooling time, cleaning, transport, refilling, and heating back to temperature, you're looking at 90+ minutes of calendar time per fryer.
+                </p>
+                <p style="line-height: 1.8; color: #374151; margin-bottom: 20px;">
+                    This calculator reveals your true annual labour costs—including the time you're not tracking—and shows you exactly what optimized oil management could save.
+                </p>
+                
+                <div class="info-box">
+                    <p><strong>What you'll discover:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li>Your actual annual labour hours for oil changes</li>
+                        <li>Direct labour costs at your wage rates</li>
+                        <li>Hidden costs: opportunity cost, safety risk, coordination overhead</li>
+                        <li>Cost per oil change and per liter of oil</li>
+                        <li>Potential savings with optimized oil management</li>
+                    </ul>
+                </div>
+
+                <p style="line-height: 1.8; color: #374151; margin-bottom: 30px;">
+                    <strong>Time to complete:</strong> 3 minutes<br>
+                    <strong>Questions:</strong> 10 simple questions about your operation
+                </p>
+
+                <button class="btn" onclick="nextPage(2)">Start Calculator</button>
+            </div>
+
+            <!-- Page 2: Basic Operation Details -->
+            <div class="page" id="page2">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%;"></div>
+                </div>
+                <p style="text-align: center; color: #6b7280; margin-bottom: 30px;">Step 1 of 4: Operation Details</p>
+
+                <h2 style="color: #1e3a8a; margin-bottom: 30px;">About Your Operation</h2>
+
+                <div class="form-group">
+                    <label for="numFryers">1. How many fryers do you have?</label>
+                    <select id="numFryers">
+                        <option value="">Select number of fryers</option>
+                        <option value="1">1 fryer</option>
+                        <option value="2">2 fryers</option>
+                        <option value="3">3 fryers</option>
+                        <option value="4">4 fryers</option>
+                        <option value="5">5 fryers</option>
+                        <option value="6">6 fryers</option>
+                        <option value="7">7 fryers</option>
+                        <option value="8">8 fryers</option>
+                        <option value="9">9 fryers</option>
+                        <option value="10">10+ fryers</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="changeFrequency">2. How often do you currently change your oil?</label>
+                    <select id="changeFrequency">
+                        <option value="">Select change frequency</option>
+                        <option value="365">Daily</option>
+                        <option value="182">Every 2 days</option>
+                        <option value="104">Twice per week (every 3.5 days)</option>
+                        <option value="52">Weekly</option>
+                        <option value="36">Every 10 days</option>
+                        <option value="26">Every 2 weeks</option>
+                        <option value="12">Monthly</option>
+                    </select>
+                    <div class="helper-text">Select how many times per year you change oil</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="staffCount">3. How many staff members typically handle each oil change?</label>
+                    <select id="staffCount">
+                        <option value="">Select staff count</option>
+                        <option value="1">1 person (standard but higher safety risk)</option>
+                        <option value="2">2 people (best practice for safety)</option>
+                        <option value="3">3+ people (unusual)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="operationType">4. What type of operation are you?</label>
+                    <select id="operationType">
+                        <option value="">Select operation type</option>
+                        <option value="qsr">QSR / Fast Food</option>
+                        <option value="fish">Fish & Chips</option>
+                        <option value="pub">Pub / Casual Dining</option>
+                        <option value="fine">Fine Dining</option>
+                        <option value="hotel">Hotel / Catering</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="nextPage(3)">Next: Time & Wages</button>
+                <button class="btn btn-secondary" onclick="nextPage(1)">Back</button>
+            </div>
+
+            <!-- Page 3: Time and Wage Details -->
+            <div class="page" id="page3">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%;"></div>
+                </div>
+                <p style="text-align: center; color: #6b7280; margin-bottom: 30px;">Step 2 of 4: Time & Labour Costs</p>
+
+                <h2 style="color: #1e3a8a; margin-bottom: 30px;">Labour Time & Costs</h2>
+
+                <div class="form-group">
+                    <label for="activeTime">5. How long does the active work take for an oil change? (per fryer)</label>
+                    <select id="activeTime">
+                        <option value="">Select active work time</option>
+                        <option value="15">15 minutes (draining, quick wipe, refilling only)</option>
+                        <option value="30">30 minutes (includes basic cleaning)</option>
+                        <option value="45">45 minutes (includes thorough cleaning)</option>
+                        <option value="60">60 minutes (includes deep cleaning)</option>
+                        <option value="75">75+ minutes (very thorough process)</option>
+                    </select>
+                    <div class="helper-text">This is just the hands-on time, not including cooling/heating periods</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="coolingTime">6. How long do you wait for oil to cool before draining?</label>
+                    <select id="coolingTime">
+                        <option value="">Select cooling time</option>
+                        <option value="0">We don't wait / drain while hot (dangerous!)</option>
+                        <option value="15">15 minutes</option>
+                        <option value="20">20 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45+ minutes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="heatingTime">7. How long does it take for new oil to heat to frying temperature?</label>
+                    <select id="heatingTime">
+                        <option value="">Select heating time</option>
+                        <option value="15">15 minutes</option>
+                        <option value="20">20 minutes</option>
+                        <option value="25">25 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="40">40+ minutes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="hourlyWage">8. What is your average kitchen staff hourly wage?</label>
+                    <input type="number" id="hourlyWage" placeholder="e.g., 12.00" step="0.50" min="0">
+                    <div class="helper-text">Enter in £ per hour (typical range: £11-15)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="managerWage">9. What is your kitchen manager hourly wage?</label>
+                    <input type="number" id="managerWage" placeholder="e.g., 18.00" step="0.50" min="0">
+                    <div class="helper-text">For coordination/oversight costs (typical range: £16-25)</div>
+                </div>
+
+                <button class="btn" onclick="nextPage(4)">Next: Additional Costs</button>
+                <button class="btn btn-secondary" onclick="nextPage(2)">Back</button>
+            </div>
+
+            <!-- Page 4: Additional Information -->
+            <div class="page" id="page4">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+                <p style="text-align: center; color: #6b7280; margin-bottom: 30px;">Step 3 of 4: Additional Factors</p>
+
+                <h2 style="color: #1e3a8a; margin-bottom: 30px;">Additional Cost Factors</h2>
+
+                <div class="form-group">
+                    <label for="serviceChanges">10. What percentage of oil changes happen during service hours?</label>
+                    <select id="serviceChanges">
+                        <option value="">Select percentage</option>
+                        <option value="0">0% - Never during service</option>
+                        <option value="5">5% - Rare emergencies only</option>
+                        <option value="10">10% - Occasionally necessary</option>
+                        <option value="25">25% - Fairly common</option>
+                        <option value="50">50% - About half the time</option>
+                    </select>
+                    <div class="helper-text">Service-hour changes create lost revenue from offline fryers</div>
+                </div>
+
+                <div class="form-group">
+                    <label>11. Current oil management systems in use: (Check all that apply)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="filterDaily" value="daily">
+                            <label for="filterDaily">Daily manual filtration</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="filterBuiltin" value="builtin">
+                            <label for="filterBuiltin">Built-in filtration system</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="filterPowder" value="powder">
+                            <label for="filterPowder">Filter powder (Magnesol, Beyond Oil, etc.)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="conditioning" value="conditioning">
+                            <label for="conditioning">Oil conditioning system (Oil Chef, Frylow, etc.)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="none" value="none">
+                            <label for="none">None - just regular oil changes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyOilSpend">12. Approximately how much do you spend on fry oil per month?</label>
+                    <select id="monthlyOilSpend">
+                        <option value="">Select monthly spend</option>
+                        <option value="150">Under £200</option>
+                        <option value="300">£200-£400</option>
+                        <option value="600">£400-£800</option>
+                        <option value="1150">£800-£1,500</option>
+                        <option value="2250">£1,500-£3,000</option>
+                        <option value="4000">£3,000-£5,000</option>
+                        <option value="6000">Over £5,000</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="calculateResults()">Calculate My Labour Costs</button>
+                <button class="btn btn-secondary" onclick="nextPage(3)">Back</button>
+            </div>
+
+            <!-- Page 5: Results -->
+            <div class="page" id="page5">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+
+                <h2 style="color: #1e3a8a; margin-bottom: 30px; text-align: center;">Your Labour Cost Analysis</h2>
+
+                <!-- Key Metrics Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div class="metric-card">
+                        <h4>Annual Labour Hours</h4>
+                        <div class="metric-value" id="totalHours">-</div>
+                        <div class="metric-subtitle">Time spent on oil changes</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Annual Labour Cost</h4>
+                        <div class="metric-value" id="totalLabourCost">-</div>
+                        <div class="metric-subtitle">Direct wages for oil changes</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Cost Per Oil Change</h4>
+                        <div class="metric-value" id="costPerChange">-</div>
+                        <div class="metric-subtitle">Labour cost per change event</div>
+                    </div>
+                </div>
+
+                <!-- Current State Results -->
+                <div class="results-dashboard">
+                    <div class="results-section">
+                        <h2>📊 Current State: Detailed Breakdown</h2>
+                        
+                        <div class="cost-item">
+                            <span class="cost-label">Time per oil change (per fryer):</span>
+                            <span class="cost-value" id="timePerChange">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Oil changes per year (all fryers):</span>
+                            <span class="cost-value" id="changesPerYear">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Total annual hours:</span>
+                            <span class="cost-value" id="annualHours">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Direct labour cost:</span>
+                            <span class="cost-value" id="directLabour">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Coordination/oversight cost:</span>
+                            <span class="cost-value" id="coordinationCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Opportunity cost estimate:</span>
+                            <span class="cost-value" id="opportunityCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Safety/injury risk cost:</span>
+                            <span class="cost-value" id="safetyCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Service-hour downtime cost:</span>
+                            <span class="cost-value" id="downtimeCost">-</span>
+                        </div>
+                    </div>
+
+                    <div class="total-highlight">
+                        <div class="cost-item">
+                            <span class="cost-label" style="font-size: 1.2em;">TOTAL ANNUAL LABOUR COST:</span>
+                            <span class="cost-value" id="totalAnnualCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Labour cost per liter of oil:</span>
+                            <span class="cost-value" id="costPerLiter">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- With Optimization Results -->
+                <div class="results-dashboard">
+                    <div class="results-section">
+                        <h2>💡 With Optimized Oil Management (50% Reduction)</h2>
+                        
+                        <div class="info-box">
+                            <p>Static catalyst systems like Frylow typically extend oil life by 100% (doubling it), which cuts oil changes—and labour—in half.</p>
+                        </div>
+
+                        <div class="cost-item">
+                            <span class="cost-label">Oil changes per year:</span>
+                            <span class="cost-value" id="optimizedChanges">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Annual labour hours:</span>
+                            <span class="cost-value" id="optimizedHours">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Direct labour cost:</span>
+                            <span class="cost-value" id="optimizedDirectLabour">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Total annual cost:</span>
+                            <span class="cost-value" id="optimizedTotalCost">-</span>
+                        </div>
+                    </div>
+
+                    <div class="savings-highlight">
+                        <div class="cost-item">
+                            <span class="cost-label" style="font-size: 1.2em;">ANNUAL LABOUR SAVINGS:</span>
+                            <span class="cost-value" id="labourSavings">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Hours saved per year:</span>
+                            <span class="cost-value" id="hoursSaved">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Monthly savings:</span>
+                            <span class="cost-value" id="monthlySavings">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Combined Savings (Labour + Oil) -->
+                <div class="results-dashboard">
+                    <div class="results-section">
+                        <h2>🎯 Total Impact: Labour + Oil Savings Combined</h2>
+                        
+                        <div class="cost-item">
+                            <span class="cost-label">Current annual oil cost (estimated):</span>
+                            <span class="cost-value" id="currentOilCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Optimized annual oil cost (50% reduction):</span>
+                            <span class="cost-value" id="optimizedOilCost">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Oil cost savings:</span>
+                            <span class="cost-value" id="oilSavings">-</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Labour cost savings:</span>
+                            <span class="cost-value" id="labourSavingsTotal">-</span>
+                        </div>
+                    </div>
+
+                    <div class="savings-highlight">
+                        <div class="cost-item">
+                            <span class="cost-label" style="font-size: 1.3em;">TOTAL ANNUAL SAVINGS POTENTIAL:</span>
+                            <span class="cost-value" style="font-size: 1.8em;" id="combinedSavings">-</span>
+                        </div>
+                    </div>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Timeframe</th>
+                                <th>Labour Savings</th>
+                                <th>Oil Savings</th>
+                                <th>Total Savings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Monthly</strong></td>
+                                <td id="monthlyLabourSavings">-</td>
+                                <td id="monthlyOilSavings">-</td>
+                                <td id="monthlyTotalSavings">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Year 1</strong></td>
+                                <td id="year1LabourSavings">-</td>
+                                <td id="year1OilSavings">-</td>
+                                <td id="year1TotalSavings">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Year 3</strong></td>
+                                <td id="year3LabourSavings">-</td>
+                                <td id="year3OilSavings">-</td>
+                                <td id="year3TotalSavings">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Year 5</strong></td>
+                                <td id="year5LabourSavings">-</td>
+                                <td id="year5OilSavings">-</td>
+                                <td id="year5TotalSavings">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Qualification Status -->
+                <div id="qualificationStatus"></div>
+
+                <!-- Expandable Sections -->
+                <div class="expandable-section">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <h3>📈 What Your Hours Could Accomplish Instead</h3>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <p style="margin: 15px 0; line-height: 1.8;">
+                            With <strong id="savedHoursText">-</strong> hours saved annually, your team could instead:
+                        </p>
+                        <ul style="line-height: 2; margin-left: 20px;">
+                            <li><strong>Prep work:</strong> Generate £<span id="prepValue">-</span> in additional food prep value (at £25-30/hour output)</li>
+                            <li><strong>Training:</strong> Fully train <span id="trainingCount">-</span> new hires, reducing ramp-up time by weeks</li>
+                            <li><strong>Maintenance:</strong> Complete preventive maintenance worth £<span id="maintenanceValue">-</span> in avoided repairs</li>
+                            <li><strong>Customer service:</strong> Focus on what actually drives revenue</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="expandable-section">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <h3>🔍 Comparison to Industry Benchmarks</h3>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Your Operation</th>
+                                    <th>Industry Average</th>
+                                    <th>Best Practice</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Time per oil change</td>
+                                    <td id="benchmarkTime">-</td>
+                                    <td>60-90 min</td>
+                                    <td>30-45 min (with optimization)</td>
+                                </tr>
+                                <tr>
+                                    <td>Labour cost per change</td>
+                                    <td id="benchmarkCostPerChange">-</td>
+                                    <td>£18-27</td>
+                                    <td>£9-14 (50% reduction)</td>
+                                </tr>
+                                <tr>
+                                    <td>Annual changes (3 fryers)</td>
+                                    <td id="benchmarkChangesPerYear">-</td>
+                                    <td>156-312</td>
+                                    <td>78-156 (with oil extension)</td>
+                                </tr>
+                                <tr>
+                                    <td>Annual labour cost</td>
+                                    <td id="benchmarkAnnualCost">-</td>
+                                    <td>£5,000-12,000</td>
+                                    <td>£2,500-6,000 (optimized)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="expandable-section">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <h3>⚙️ Your Current System Impact</h3>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    <div class="expandable-content" id="systemImpact">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="download-buttons">
+                    <a href="#" class="download-btn" onclick="downloadPDF(); return false;">📄 Download Full Report (PDF)</a>
+                    <a href="#" class="download-btn" onclick="shareResults(); return false;">📧 Email Results to Team</a>
+                </div>
+
+                <button class="btn" onclick="resetCalculator()" style="margin-top: 20px; background: #6b7280;">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store calculation data
+        let calculationData = {};
+
+        function nextPage(pageNum) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show target page
+            document.getElementById('page' + pageNum).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function calculateResults() {
+            // Get all input values
+            const numFryers = parseInt(document.getElementById('numFryers').value);
+            const changeFrequency = parseInt(document.getElementById('changeFrequency').value);
+            const staffCount = parseInt(document.getElementById('staffCount').value);
+            const activeTime = parseInt(document.getElementById('activeTime').value);
+            const coolingTime = parseInt(document.getElementById('coolingTime').value);
+            const heatingTime = parseInt(document.getElementById('heatingTime').value);
+            const hourlyWage = parseFloat(document.getElementById('hourlyWage').value);
+            const managerWage = parseFloat(document.getElementById('managerWage').value);
+            const serviceChanges = parseInt(document.getElementById('serviceChanges').value);
+            const monthlyOilSpend = parseInt(document.getElementById('monthlyOilSpend').value);
+
+            // Validation
+            if (!numFryers || !changeFrequency || !staffCount || !activeTime || !hourlyWage || !managerWage) {
+                alert('Please fill in all required fields before calculating.');
+                return;
+            }
+
+            // Calculate total time per oil change (per fryer)
+            const totalTimePerChange = activeTime + coolingTime + heatingTime;
+            
+            // Calculate total changes per year (all fryers)
+            const totalChangesPerYear = changeFrequency * numFryers;
+            
+            // Calculate total hours
+            const totalHours = (totalTimePerChange / 60) * totalChangesPerYear * staffCount;
+            
+            // Direct labour cost
+            const directLabourCost = totalHours * hourlyWage;
+            
+            // Coordination cost (15 min per change at manager wage)
+            const coordinationHours = (changeFrequency * 15) / 60;
+            const coordinationCost = coordinationHours * managerWage;
+            
+            // Opportunity cost (50% of direct labour represents lost productivity)
+            const opportunityCost = directLabourCost * 0.5;
+            
+            // Safety cost (1% incident rate at £5000 per incident)
+            const safetyCost = changeFrequency * 0.01 * 5000;
+            
+            // Service-hour downtime cost
+            const downtimePercentage = serviceChanges / 100;
+            const downtimeChanges = changeFrequency * downtimePercentage;
+            const downtimeCost = downtimeChanges * (totalTimePerChange / 60) * 150; // £150/hour revenue capacity
+            
+            // Total annual cost
+            const totalAnnualCost = directLabourCost + coordinationCost + opportunityCost + safetyCost + downtimeCost;
+            
+            // Cost per change
+            const costPerChange = totalAnnualCost / changeFrequency;
+            
+            // Annual oil cost
+            const annualOilCost = monthlyOilSpend * 12;
+            
+            // Estimate liters (rough calculation)
+            const estimatedLitersPerYear = (annualOilCost / 1.40); // Assuming £1.40/liter
+            const labourCostPerLiter = directLabourCost / estimatedLitersPerYear;
+            
+            // OPTIMIZED CALCULATIONS (50% reduction)
+            const optimizedChanges = changeFrequency / 2;
+            const optimizedTotalChanges = optimizedChanges * numFryers;
+            const optimizedHours = (totalTimePerChange / 60) * optimizedTotalChanges * staffCount;
+            const optimizedDirectLabour = optimizedHours * hourlyWage;
+            const optimizedCoordination = ((optimizedChanges * 15) / 60) * managerWage;
+            const optimizedOpportunity = optimizedDirectLabour * 0.5;
+            const optimizedSafety = optimizedChanges * 0.01 * 5000;
+            const optimizedDowntime = (optimizedChanges * downtimePercentage) * (totalTimePerChange / 60) * 150;
+            const optimizedTotalCost = optimizedDirectLabour + optimizedCoordination + optimizedOpportunity + optimizedSafety + optimizedDowntime;
+            
+            // Savings
+            const labourSavings = totalAnnualCost - optimizedTotalCost;
+            const hoursSaved = totalHours - optimizedHours;
+            const oilSavings = annualOilCost * 0.5;
+            const combinedSavings = labourSavings + oilSavings;
+            
+            // Store data
+            calculationData = {
+                numFryers,
+                changeFrequency,
+                staffCount,
+                totalTimePerChange,
+                totalChangesPerYear,
+                totalHours,
+                directLabourCost,
+                coordinationCost,
+                opportunityCost,
+                safetyCost,
+                downtimeCost,
+                totalAnnualCost,
+                costPerChange,
+                annualOilCost,
+                labourCostPerLiter,
+                optimizedChanges,
+                optimizedHours,
+                optimizedDirectLabour,
+                optimizedTotalCost,
+                labourSavings,
+                hoursSaved,
+                oilSavings,
+                combinedSavings,
+                monthlyOilSpend
+            };
+            
+            // Update display
+            updateResultsDisplay();
+            
+            // Show results page
+            nextPage(5);
+        }
+
+        function updateResultsDisplay() {
+            const d = calculationData;
+            
+            // Key metrics
+            document.getElementById('totalHours').textContent = Math.round(d.totalHours) + ' hrs';
+            document.getElementById('totalLabourCost').textContent = '£' + formatNumber(Math.round(d.totalAnnualCost));
+            document.getElementById('costPerChange').textContent = '£' + formatNumber(d.costPerChange.toFixed(2));
+            
+            // Current state
+            document.getElementById('timePerChange').textContent = d.totalTimePerChange + ' minutes';
+            document.getElementById('changesPerYear').textContent = d.totalChangesPerYear + ' changes';
+            document.getElementById('annualHours').textContent = Math.round(d.totalHours) + ' hours';
+            document.getElementById('directLabour').textContent = '£' + formatNumber(Math.round(d.directLabourCost));
+            document.getElementById('coordinationCost').textContent = '£' + formatNumber(Math.round(d.coordinationCost));
+            document.getElementById('opportunityCost').textContent = '£' + formatNumber(Math.round(d.opportunityCost));
+            document.getElementById('safetyCost').textContent = '£' + formatNumber(Math.round(d.safetyCost));
+            document.getElementById('downtimeCost').textContent = '£' + formatNumber(Math.round(d.downtimeCost));
+            document.getElementById('totalAnnualCost').textContent = '£' + formatNumber(Math.round(d.totalAnnualCost));
+            document.getElementById('costPerLiter').textContent = '£' + d.labourCostPerLiter.toFixed(2);
+            
+            // Optimized
+            document.getElementById('optimizedChanges').textContent = Math.round(d.optimizedChanges * d.numFryers) + ' changes (50% reduction)';
+            document.getElementById('optimizedHours').textContent = Math.round(d.optimizedHours) + ' hours';
+            document.getElementById('optimizedDirectLabour').textContent = '£' + formatNumber(Math.round(d.optimizedDirectLabour));
+            document.getElementById('optimizedTotalCost').textContent = '£' + formatNumber(Math.round(d.optimizedTotalCost));
+            
+            // Savings
+            document.getElementById('labourSavings').textContent = '£' + formatNumber(Math.round(d.labourSavings));
+            document.getElementById('hoursSaved').textContent = Math.round(d.hoursSaved) + ' hours';
+            document.getElementById('monthlySavings').textContent = '£' + formatNumber(Math.round(d.labourSavings / 12));
+            
+            // Combined savings
+            document.getElementById('currentOilCost').textContent = '£' + formatNumber(Math.round(d.annualOilCost));
+            document.getElementById('optimizedOilCost').textContent = '£' + formatNumber(Math.round(d.annualOilCost * 0.5));
+            document.getElementById('oilSavings').textContent = '£' + formatNumber(Math.round(d.oilSavings));
+            document.getElementById('labourSavingsTotal').textContent = '£' + formatNumber(Math.round(d.labourSavings));
+            document.getElementById('combinedSavings').textContent = '£' + formatNumber(Math.round(d.combinedSavings));
+            
+            // Timeframe table
+            document.getElementById('monthlyLabourSavings').textContent = '£' + formatNumber(Math.round(d.labourSavings / 12));
+            document.getElementById('monthlyOilSavings').textContent = '£' + formatNumber(Math.round(d.oilSavings / 12));
+            document.getElementById('monthlyTotalSavings').textContent = '£' + formatNumber(Math.round(d.combinedSavings / 12));
+            
+            document.getElementById('year1LabourSavings').textContent = '£' + formatNumber(Math.round(d.labourSavings));
+            document.getElementById('year1OilSavings').textContent = '£' + formatNumber(Math.round(d.oilSavings));
+            document.getElementById('year1TotalSavings').textContent = '£' + formatNumber(Math.round(d.combinedSavings));
+            
+            document.getElementById('year3LabourSavings').textContent = '£' + formatNumber(Math.round(d.labourSavings * 3));
+            document.getElementById('year3OilSavings').textContent = '£' + formatNumber(Math.round(d.oilSavings * 3));
+            document.getElementById('year3TotalSavings').textContent = '£' + formatNumber(Math.round(d.combinedSavings * 3));
+            
+            document.getElementById('year5LabourSavings').textContent = '£' + formatNumber(Math.round(d.labourSavings * 5));
+            document.getElementById('year5OilSavings').textContent = '£' + formatNumber(Math.round(d.oilSavings * 5));
+            document.getElementById('year5TotalSavings').textContent = '£' + formatNumber(Math.round(d.combinedSavings * 5));
+            
+            // Opportunity cost details
+            document.getElementById('savedHoursText').textContent = Math.round(d.hoursSaved);
+            document.getElementById('prepValue').textContent = formatNumber(Math.round(d.hoursSaved * 27.5)); // Average of 25-30
+            document.getElementById('trainingCount').textContent = Math.round(d.hoursSaved / 80); // ~80 hours to train someone
+            document.getElementById('maintenanceValue').textContent = formatNumber(Math.round(d.hoursSaved * 15)); // Conservative maintenance value
+            
+            // Benchmarks
+            document.getElementById('benchmarkTime').textContent = d.totalTimePerChange + ' min';
+            document.getElementById('benchmarkCostPerChange').textContent = '£' + formatNumber(d.costPerChange.toFixed(2));
+            document.getElementById('benchmarkChangesPerYear').textContent = d.totalChangesPerYear;
+            document.getElementById('benchmarkAnnualCost').textContent = '£' + formatNumber(Math.round(d.totalAnnualCost));
+            
+            // Qualification status
+            updateQualificationStatus();
+            
+            // System impact
+            updateSystemImpact();
+        }
+
+        function updateQualificationStatus() {
+            const d = calculationData;
+            const qualified = d.monthlyOilSpend >= 400 && d.changeFrequency >= 104; // £400/month and 2x/week
+            
+            let html = '';
+            
+            if (qualified) {
+                html = `
+                    <div class="qualification-box qualified">
+                        <h3>✅ YOU QUALIFY FOR A FREE DARK OIL DEMONSTRATION</h3>
+                        <p style="line-height: 1.8; margin: 15px 0;">
+                            Based on your monthly oil spend of <strong>£${d.monthlyOilSpend}</strong> and <strong>${d.changeFrequency}</strong> annual changes, 
+                            you're an ideal candidate for our Dark Oil Demo.
+                        </p>
+                        <p style="line-height: 1.8; margin: 15px 0;">
+                            <strong>Your projected savings:</strong>
+                        </p>
+                        <ul style="margin-left: 20px; line-height: 2;">
+                            <li>Labour savings: <strong>£${formatNumber(Math.round(d.labourSavings))}</strong> annually</li>
+                            <li>Oil savings: <strong>£${formatNumber(Math.round(d.oilSavings))}</strong> annually</li>
+                            <li>Total savings: <strong>£${formatNumber(Math.round(d.combinedSavings))}</strong> annually</li>
+                            <li>Typical payback period: <strong>3-6 months</strong></li>
+                        </ul>
+                        <p style="line-height: 1.8; margin: 15px 0;">
+                            We'll visit your kitchen, use your own oil marked for disposal, and prove the food quality improvement in real-time. 
+                            No obligation. No sales pressure. Just demonstrable results.
+                        </p>
+                        <a href="#" class="cta-button" onclick="bookDemo(); return false;">📅 Book Your Free Demo</a>
+                    </div>
+                `;
+            } else {
+                const reasons = [];
+                if (d.monthlyOilSpend < 400) reasons.push(`Monthly spend (£${d.monthlyOilSpend}) is below £400 threshold`);
+                if (d.changeFrequency < 104) reasons.push(`Change frequency (${Math.round(d.changeFrequency/52)} times per week) is below 2x weekly`);
+                
+                html = `
+                    <div class="qualification-box">
+                        <h3>⚠️ Current Qualification Status</h3>
+                        <p style="line-height: 1.8; margin: 15px 0;">
+                            Your operation doesn't currently meet our standard qualification thresholds:
+                        </p>
+                        <ul style="margin-left: 20px; line-height: 2;">
+                            ${reasons.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                        <p style="line-height: 1.8; margin: 15px 0;">
+                            However, your potential annual savings of <strong>£${formatNumber(Math.round(d.combinedSavings))}</strong> 
+                            may still justify optimization. If you're planning to scale or want to discuss your specific situation:
+                        </p>
+                        <a href="#" class="cta-button" onclick="contactUs(); return false;">💬 Contact Us to Discuss</a>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('qualificationStatus').innerHTML = html;
+        }
+
+        function updateSystemImpact() {
+            const hasPowder = document.getElementById('filterPowder').checked;
+            const hasConditioning = document.getElementById('conditioning').checked;
+            const hasNone = document.getElementById('none').checked;
+            
+            let html = '<p style="margin: 15px 0; line-height: 1.8;">';
+            
+            if (hasNone) {
+                html += '<strong>No current oil management system:</strong> You have the highest savings potential. ' +
+                        'Implementing proper oil conditioning could reduce your costs by 50% or more.';
+            } else if (hasPowder) {
+                html += '<strong>Currently using filter powder (Magnesol type):</strong> You\'re adding labour cost ' +
+                        '(8-10 minutes daily) and consumable costs (£100+/month) for modest oil life extension (10-20%). ' +
+                        'Static catalyst systems eliminate the daily labour and ongoing costs while delivering 2-3x better performance.';
+            } else if (hasConditioning) {
+                html += '<strong>Already using oil conditioning:</strong> You\'re ahead of most operations. If you\'re not seeing ' +
+                        '40-50% oil cost reduction with consistent performance, your current system may be underperforming or degrading over time.';
+            } else {
+                html += '<strong>Using filtration only:</strong> Filtration removes particles but doesn\'t prevent molecular degradation. ' +
+                        'Adding proper oil conditioning to your existing filtration can cut oil consumption by 40-50% while requiring no daily labour.';
+            }
+            
+            html += '</p>';
+            
+            document.getElementById('systemImpact').innerHTML = html;
+        }
+
+        function toggleExpand(header) {
+            const content = header.nextElementSibling;
+            const isExpanded = content.classList.contains('expanded');
+            
+            if (isExpanded) {
+                content.classList.remove('expanded');
+                header.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                header.classList.add('expanded');
+            }
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function downloadPDF() {
+            alert('PDF download functionality would be implemented here.\n\nIn production, this would generate a detailed PDF report with all your calculations, charts, and recommendations.');
+        }
+
+        function shareResults() {
+            const d = calculationData;
+            const subject = encodeURIComponent('Fry Oil Labour Cost Analysis Results');
+            const body = encodeURIComponent(
+                `I've completed a labour cost analysis for our oil change routine.\n\n` +
+                `KEY FINDINGS:\n` +
+                `• Annual labour hours: ${Math.round(d.totalHours)} hours\n` +
+                `• Annual labour cost: £${formatNumber(Math.round(d.totalAnnualCost))}\n` +
+                `• Potential labour savings: £${formatNumber(Math.round(d.labourSavings))}\n` +
+                `• Potential oil savings: £${formatNumber(Math.round(d.oilSavings))}\n` +
+                `• Total annual savings potential: £${formatNumber(Math.round(d.combinedSavings))}\n\n` +
+                `View the full analysis at: [Calculator URL would go here]`
+            );
+            
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function bookDemo() {
+            alert('This would redirect to your demo booking page/form.\n\nIn production, link to: https://savefryoil.co.uk/book-demo');
+        }
+
+        function contactUs() {
+            alert('This would open your contact form.\n\nIn production, link to: https://savefryoil.co.uk/contact');
+        }
+
+        function resetCalculator() {
+            if (confirm('Are you sure you want to start over? All entered data will be lost.')) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
